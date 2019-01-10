@@ -1,6 +1,6 @@
 //! A Java-like Comparator type.
 
-#![deny(clippy::all, clippy::cargo, missing_docs)]
+#![deny(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "std")]

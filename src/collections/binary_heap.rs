@@ -200,7 +200,8 @@ pub struct BinaryHeap<T, U = NaturalOrder<T>> {
 /// [`BinaryHeap`]: struct.BinaryHeap.html
 pub struct PeekMut<'a, T, U>
 where
-    U: Comparator<T>,
+    T: 'a,
+    U: 'a + Comparator<T>,
 {
     heap: &'a mut BinaryHeap<T, U>,
     sift: bool,
