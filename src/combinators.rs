@@ -2,7 +2,6 @@
 
 use core::cmp::Ordering;
 use core::fmt;
-use core::marker::PhantomData;
 use Comparator;
 
 /// A comparator that reverse its underlying comparator.
@@ -95,48 +94,23 @@ where
 }
 
 /// Creates a natural ordering comparator.
-pub fn natural_order<T>() -> NaturalOrder<T>
-where
-    T: Ord,
-{
-    NaturalOrder {
-        _phantom: PhantomData,
-    }
+pub fn natural_order() -> NaturalOrder {
+    NaturalOrder { _priv: () }
 }
 
 /// A natural ordering comparator.
-pub struct NaturalOrder<T> {
-    _phantom: PhantomData<fn(&T)>,
+#[derive(Copy, Clone, Default)]
+pub struct NaturalOrder {
+    _priv: (),
 }
 
-impl<T> Clone for NaturalOrder<T> {
-    fn clone(&self) -> Self {
-        Self {
-            _phantom: PhantomData,
-        }
-    }
-}
-
-impl<T> Copy for NaturalOrder<T> {}
-
-impl<T> Default for NaturalOrder<T>
-where
-    T: Ord,
-{
-    fn default() -> Self {
-        Self {
-            _phantom: PhantomData,
-        }
-    }
-}
-
-impl<T> fmt::Debug for NaturalOrder<T> {
+impl fmt::Debug for NaturalOrder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("NaturalOrder").finish()
     }
 }
 
-impl<T> Comparator<T> for NaturalOrder<T>
+impl<T> Comparator<T> for NaturalOrder
 where
     T: Ord,
 {
@@ -146,37 +120,23 @@ where
 }
 
 /// Creates a reverse ordering comparator.
-pub fn reverse_order<T>() -> ReverseOrder<T>
-where
-    T: Ord,
-{
-    ReverseOrder {
-        _phantom: PhantomData,
-    }
+pub fn reverse_order() -> ReverseOrder {
+    ReverseOrder { _priv: () }
 }
 
 /// Reverse ordering comparator.
-pub struct ReverseOrder<T> {
-    _phantom: PhantomData<fn(&T)>,
+#[derive(Copy, Clone, Default)]
+pub struct ReverseOrder {
+    _priv: (),
 }
 
-impl<T> Clone for ReverseOrder<T> {
-    fn clone(&self) -> Self {
-        Self {
-            _phantom: PhantomData,
-        }
-    }
-}
-
-impl<T> Copy for ReverseOrder<T> {}
-
-impl<T> fmt::Debug for ReverseOrder<T> {
+impl fmt::Debug for ReverseOrder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("ReverseOrder").finish()
     }
 }
 
-impl<T> Comparator<T> for ReverseOrder<T>
+impl<T> Comparator<T> for ReverseOrder
 where
     T: Ord,
 {
