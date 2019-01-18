@@ -11,6 +11,7 @@ pub struct Reversed<T>(pub(crate) T);
 impl<T, U> Comparator<U> for Reversed<T>
 where
     T: Comparator<U>,
+    U: ?Sized,
 {
     fn compare(&self, a: &U, b: &U) -> Ordering {
         self.0.compare(a, b).reverse()
@@ -25,6 +26,7 @@ impl<T, U, W> Comparator<W> for ThenComparing<T, U>
 where
     T: Comparator<W>,
     U: Comparator<W>,
+    W: ?Sized,
 {
     fn compare(&self, a: &W, b: &W) -> Ordering {
         self.0.compare(a, b).then_with(|| self.1.compare(a, b))
@@ -53,6 +55,7 @@ impl<T, F, U, W> Comparator<U> for ThenComparingByKey<T, F>
 where
     T: Comparator<U>,
     F: Fn(&U) -> W,
+    U: ?Sized,
     W: Ord,
 {
     fn compare(&self, a: &U, b: &U) -> Ordering {
@@ -66,6 +69,7 @@ where
 pub fn comparing<F, T, U>(f: F) -> Comparing<F>
 where
     F: Fn(&T) -> U,
+    T: ?Sized,
     U: Ord,
 {
     Comparing { f }
@@ -86,6 +90,7 @@ impl<F> fmt::Debug for Comparing<F> {
 impl<F, T, U> Comparator<T> for Comparing<F>
 where
     F: Fn(&T) -> U,
+    T: ?Sized,
     U: Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
@@ -112,7 +117,7 @@ impl fmt::Debug for NaturalOrder {
 
 impl<T> Comparator<T> for NaturalOrder
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
         a.cmp(b)
@@ -138,7 +143,7 @@ impl fmt::Debug for ReverseOrder {
 
 impl<T> Comparator<T> for ReverseOrder
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
         b.cmp(a)

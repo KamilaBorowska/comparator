@@ -15,7 +15,10 @@ use combinators::{Reversed, ThenComparing, ThenComparingByKey};
 use core::cmp::Ordering;
 
 /// An interface for dealing with comparators.
-pub trait Comparator<T> {
+pub trait Comparator<T>
+where
+    T: ?Sized,
+{
     /// Compares its two arguments for order.
     fn compare(&self, a: &T, b: &T) -> Ordering;
 
@@ -69,6 +72,7 @@ pub trait Comparator<T> {
 impl<F, T> Comparator<T> for F
 where
     F: Fn(&T, &T) -> Ordering,
+    T: ?Sized,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
         self(a, b)
@@ -90,6 +94,9 @@ where
 /// v.sort_by(as_fn(reverse_order()));
 /// assert_eq!(v, [5, 4, 3, 2, 1]);
 /// ```
-pub fn as_fn<T>(comparator: impl Comparator<T>) -> impl Fn(&T, &T) -> Ordering {
+pub fn as_fn<T>(comparator: impl Comparator<T>) -> impl Fn(&T, &T) -> Ordering
+where
+    T: ?Sized,
+{
     move |a, b| comparator.compare(a, b)
 }
