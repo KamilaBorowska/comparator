@@ -185,7 +185,7 @@ use Comparator;
 /// // The heap should now be empty.
 /// assert!(heap.is_empty())
 /// ```
-pub struct BinaryHeap<T, U = NaturalOrder<T>> {
+pub struct BinaryHeap<T, U = NaturalOrder> {
     data: Vec<T>,
     comparator: U,
 }
