@@ -12,6 +12,7 @@ pub struct Reversed<T>(pub(crate) T);
 impl<T, U> Comparator<U> for Reversed<T>
 where
     T: Comparator<U>,
+    U: ?Sized,
 {
     fn compare(&self, a: &U, b: &U) -> Ordering {
         self.0.compare(a, b).reverse()
@@ -26,6 +27,7 @@ impl<T, U, W> Comparator<W> for ThenComparing<T, U>
 where
     T: Comparator<W>,
     U: Comparator<W>,
+    W: ?Sized,
 {
     fn compare(&self, a: &W, b: &W) -> Ordering {
         self.0.compare(a, b).then_with(|| self.1.compare(a, b))
@@ -54,6 +56,7 @@ impl<T, F, U, W> Comparator<U> for ThenComparingByKey<T, F>
 where
     T: Comparator<U>,
     F: Fn(&U) -> W,
+    U: ?Sized,
     W: Ord,
 {
     fn compare(&self, a: &U, b: &U) -> Ordering {
@@ -67,6 +70,7 @@ where
 pub fn comparing<F, T, U>(f: F) -> Comparing<F>
 where
     F: Fn(&T) -> U,
+    T: ?Sized,
     U: Ord,
 {
     Comparing { f }
@@ -87,6 +91,7 @@ impl<F> fmt::Debug for Comparing<F> {
 impl<F, T, U> Comparator<T> for Comparing<F>
 where
     F: Fn(&T) -> U,
+    T: ?Sized,
     U: Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
@@ -97,7 +102,7 @@ where
 /// Creates a natural ordering comparator.
 pub fn natural_order<T>() -> NaturalOrder<T>
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     NaturalOrder {
         _phantom: PhantomData,
@@ -105,11 +110,17 @@ where
 }
 
 /// A natural ordering comparator.
-pub struct NaturalOrder<T> {
+pub struct NaturalOrder<T>
+where
+    T: ?Sized,
+{
     _phantom: PhantomData<fn(&T)>,
 }
 
-impl<T> Clone for NaturalOrder<T> {
+impl<T> Clone for NaturalOrder<T>
+where
+    T: ?Sized,
+{
     fn clone(&self) -> Self {
         Self {
             _phantom: PhantomData,
@@ -117,11 +128,11 @@ impl<T> Clone for NaturalOrder<T> {
     }
 }
 
-impl<T> Copy for NaturalOrder<T> {}
+impl<T> Copy for NaturalOrder<T> where T: ?Sized {}
 
 impl<T> Default for NaturalOrder<T>
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     fn default() -> Self {
         Self {
@@ -130,7 +141,10 @@ where
     }
 }
 
-impl<T> fmt::Debug for NaturalOrder<T> {
+impl<T> fmt::Debug for NaturalOrder<T>
+where
+    T: ?Sized,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("NaturalOrder").finish()
     }
@@ -138,7 +152,7 @@ impl<T> fmt::Debug for NaturalOrder<T> {
 
 impl<T> Comparator<T> for NaturalOrder<T>
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
         a.cmp(b)
@@ -148,7 +162,7 @@ where
 /// Creates a reverse ordering comparator.
 pub fn reverse_order<T>() -> ReverseOrder<T>
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     ReverseOrder {
         _phantom: PhantomData,
@@ -156,11 +170,17 @@ where
 }
 
 /// Reverse ordering comparator.
-pub struct ReverseOrder<T> {
+pub struct ReverseOrder<T>
+where
+    T: ?Sized,
+{
     _phantom: PhantomData<fn(&T)>,
 }
 
-impl<T> Clone for ReverseOrder<T> {
+impl<T> Clone for ReverseOrder<T>
+where
+    T: ?Sized,
+{
     fn clone(&self) -> Self {
         Self {
             _phantom: PhantomData,
@@ -168,9 +188,12 @@ impl<T> Clone for ReverseOrder<T> {
     }
 }
 
-impl<T> Copy for ReverseOrder<T> {}
+impl<T> Copy for ReverseOrder<T> where T: ?Sized {}
 
-impl<T> fmt::Debug for ReverseOrder<T> {
+impl<T> fmt::Debug for ReverseOrder<T>
+where
+    T: ?Sized,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("ReverseOrder").finish()
     }
@@ -178,7 +201,7 @@ impl<T> fmt::Debug for ReverseOrder<T> {
 
 impl<T> Comparator<T> for ReverseOrder<T>
 where
-    T: Ord,
+    T: ?Sized + Ord,
 {
     fn compare(&self, a: &T, b: &T) -> Ordering {
         b.cmp(a)
