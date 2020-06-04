@@ -808,7 +808,10 @@ where
     /// assert_eq!(a.into_sorted_vec(), [-20, -10, 1, 2, 3, 3, 5, 43]);
     /// assert!(b.is_empty());
     /// ```
-    pub fn append(&mut self, other: &mut Self) {
+    pub fn append<W>(&mut self, other: &mut BinaryHeap<T, W>)
+    where
+        W: Comparator<T>,
+    {
         #[inline(always)]
         fn log2_fast(x: usize) -> usize {
             8 * size_of::<usize>() - (x.leading_zeros() as usize) - 1
@@ -817,10 +820,6 @@ where
         #[inline]
         fn better_to_rebuild(len1: usize, len2: usize) -> bool {
             2 * (len1 + len2) < len2 * log2_fast(len1)
-        }
-
-        if self.len() < other.len() {
-            swap(self, other);
         }
 
         if other.is_empty() {
